@@ -33,7 +33,7 @@ class OpenAIClient:
             return str(e)
     
     def _parse_response(self, response):
-        match = re.search(self.regex, response)
+        match = re.search(self.regex, response, re.DOTALL)
         if match:
             print(match)
             return match.group(0)

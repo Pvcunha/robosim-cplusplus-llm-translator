@@ -1,1 +1,7 @@
 .env
+
+# ignores all __pycache__ directories
+src/**/__pycache__/
+
+# ignores output binary
+output
