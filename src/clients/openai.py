@@ -1,6 +1,6 @@
 from openai import OpenAI
 from src import errors
-import re
+from src.utils import DEFAULT_JSON_PATTERN
 
 class OpenAIClient:
     def __init__(self):
@@ -8,8 +8,7 @@ class OpenAIClient:
         self.default_output_format = '{"code": "#include <iostream>\n\nint main() {\n    std::cout << \"Hello, World!\" << std::endl;\n    return 0;\n}"}'
         self.model = "gpt-4"
         self.messages = [] # to append messages and generate an message history between the user and the AI
-        self.regex = r'\{.*\}'
-
+        
     def interact(self, message: str):
         try:
             response = self.client.chat.completions.create(
@@ -19,24 +18,25 @@ class OpenAIClient:
 
             return response.choices[0].message.content
         except Exception as e:
-            return str(e)
+            raise errors.RequestFailedError(str(e))
 
     def get_hello_world_cpp(self):
         try:
             response = self.client.chat.completions.create(
                 model="gpt-4",
-                messages=[{"role": "user", "content": f"Your output must be a json in this format {self.default_output_format}. Write a 'Hello, World!' program in C++."}]
+                messages=[
+                    {"role": "system", "content": "You are an assistant that responds in JSON format only."},
+                    {"role": "user", "content": "Write a C++ Hello World program and return it in JSON format."}
+                ],
+                functions=[{
+                    "name": "generate_code",
+                    "description": "Generate C++ source code in JSON format.",
+                    "parameters": DEFAULT_JSON_PATTERN
+                }],
+                function_call={"name": "generate_code"}
             )
 
-            return self._parse_response(response.choices[0].message.content)
+            return response.choices[0].message.content
         except Exception as e:
-            return str(e)
-    
-    def _parse_response(self, response):
-        match = re.search(self.regex, response, re.DOTALL)
-        if match:
-            print(match)
-            return match.group(0)
-
-        raise errors.InvalidResponseError("Invalid response: {}".format(response))
+            raise errors.RequestFailedError(str(e))
         
