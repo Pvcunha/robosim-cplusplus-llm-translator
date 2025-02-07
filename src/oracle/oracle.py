@@ -2,16 +2,14 @@ import subprocess
 import os
 import json
 import typing
-import re
 import logging
 
 from src import errors
 
 
 class Oracle:
-    def __init__(self, logger=None):
+    def __init__(self, logger: logging.Logger=None):
         self.logger = logger
-        self.logger.addLevelName(1, "ORACLE")
         self.regex = r'\{.*\}'
 
     def _save_code(self, code):
@@ -20,6 +18,7 @@ class Oracle:
 
     def _parse_json(self, ai_json) -> typing.Dict[str, str] :
         try:
+            self.logger.debug("Parsing JSON")
             data = json.loads(ai_json)
             if "code" not in data:
                 raise errors.InvalidOutputFormatError("Invalid output format: {}".format(ai_json))
@@ -27,14 +26,6 @@ class Oracle:
             raise errors.InvalidOutputFormatError("Invalid output format: {}".format(ai_json))
 
         return data
-
-    def _parse_response(self, ai_response):
-        match = re.search(self.regex, ai_response, re.DOTALL)
-        if match:
-            print(match)
-            return match.group(0)
-
-        raise errors.InvalidResponseError("Invalid response: {}".format(ai_response))
     
     def _compile_and_run_cpp(self, source_file):
         executable = "output.exe" if os.name == "nt" else "./output"
@@ -51,16 +42,18 @@ class Oracle:
 
         # Run the compiled executable
         run_process = subprocess.run([executable], capture_output=True, text=True)
-        print(run_process.stdout)
+        self.logger.info(f"Program output:\n{run_process.stdout}")
         
     def validate_output(self, ai_response) -> bool:
+
         self.logger.info("Validating the output...")
+
         self.logger.debug("AI response: {}".format(ai_response))
-        json = self._parse_response(ai_response)
-        self.logger.debug("Parsed JSON: {}".format(json))
-        #data = self._parse_json(json)
 
-        #self._save_code(data["code"])
+        data = self._parse_json(ai_response)
 
-       # self._compile_and_run_cpp("./tmp/code.cpp")
+        self._save_code(data["code"])
+
+        self._compile_and_run_cpp("./tmp/code.cpp")
+        
         return True
