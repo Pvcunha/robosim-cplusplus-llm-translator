@@ -14,8 +14,9 @@ if __name__ == "__main__":
     oracle = Oracle(logger=logger)
 
     try:
-        data = gpt.get_hello_world_cpp()
+        data = gpt.interact("write a c++ hello world")
         print(data)
         logger.debug(oracle.validate_output(data))
     except Exception as e:
         print(str(e))
+
