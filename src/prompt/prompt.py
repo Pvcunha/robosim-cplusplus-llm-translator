@@ -1,18 +1,19 @@
 from abc import ABC, abstractmethod
 
+
 class PromptInterface(ABC):
     @abstractmethod
-    def get_prompt(self):
+    def get_prompt(self) -> str:
         pass
 
     @abstractmethod
-    def save_intermediate_answer(self, answer, error):
+    def save_intermediate_answer(self, answer, error) -> None:
         pass
 
     @abstractmethod
-    def save_final_answer(self, answer):
+    def save_final_answer(self, answer) -> None:
         pass
-    
+
 
 class PromptFewShot(PromptInterface):
     def __init__(self, title: str, question: str) -> None:
@@ -24,10 +25,10 @@ class PromptFewShot(PromptInterface):
     def save_intermediate_answer(self, answer, error) -> None:
         self.answers.append({"answer": answer, "error": error})
 
-    def save_final_answer(self, answer):
+    def save_final_answer(self, answer) -> None:
         self.final_answer = answer
-    
-    def get_prompt(self):
+
+    def get_prompt(self) -> str:
         question = f"question: {self.question}"
         iterations_logs = ""
         for iteration in self.answers:
