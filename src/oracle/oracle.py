@@ -11,9 +11,10 @@ class Oracle:
     def __init__(self, logger: logging.Logger=None):
         self.logger = logger
         self.regex = r'\{.*\}'
+        self.iteration_title = "Iteration"
 
     def _save_code(self, code):
-        with open("./tmp/code.cpp", "w") as file:
+        with open(f"./tmp/{self.iteration_title}.cpp", "w") as file:
             file.write(code)
 
     def _parse_json(self, ai_json) -> typing.Dict[str, str] :
@@ -57,3 +58,6 @@ class Oracle:
         self._compile_and_run_cpp("./tmp/code.cpp")
         
         return True
+
+    def set_iteration_title(self, title):
+        self.iteration_title = title
