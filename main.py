@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from src.oracle import Oracle
 from src.clients import OpenAIClient
 from src.prompt import PromptFewShot as Prompt
+from src.utils import *
 from pathlib import Path
 
 import pandas as pd
@@ -12,36 +13,49 @@ load_dotenv()
 
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s",
+        filename="log.log",
+        filemode="w"
+    )
 
     gpt = OpenAIClient(logger=logger)
     oracle = Oracle(logger=logger)
 
     question = "Translate the codes from Python to C++."
-    csv = {}
+    csv = {
+        "ID": [],
+        "Result": [],
+        "Loop Count": [],
+        "Chat History": [],
+        "Valid Answer": []
+    }
 
-    for input in Path('scr/dataset').iterdir():
-        csv["Code ID"].append(input.name)
+    for input in Path("src/dataset").iterdir():
+        
         iteration = 0
 
-        with open(input, 'r', encoding='utf-8') as file:
-            prompt = Prompt(question, file.read())
+        global prompt
+        with open(input, "r", encoding="utf-8") as file:
+            prompt = Prompt(title="foo", question=question, code=file.read())
+
+        logger.info(f"Processing {input.name}")
 
         for request in range(MAX_REQUEST):
-            csv["Request ID"].append(request)
+            # csv["Code ID"].append(input.name)
+            # csv["Request ID"].append(request)
+            csv["ID"].append(f"{input.name}_{request}")
             valid = False
-            
+
             while not valid and iteration < MAX_INTERACTIONS:
                 iteration += 1
-                logger.info(f"Iteration {iteration}")
+                logger.info(f"Iteration {iteration} request {request}")
 
                 try:
                     prompt_message = prompt.get_prompt()
                     answer = gpt.interact(prompt_message)
-                    # oracle.set_iteration_title(f"{prompt.title}_{iteration}")
-                    # valid = oracle.validate_output(answer)
-                    if interation == 2:
-                        valid = True
+                    oracle.set_iteration_title(f"{input.name}_{request}_{iteration}")
+                    valid = oracle.validate_output(answer)
 
                     if valid:
                         logger.debug(f"Final answer: {answer}")
@@ -55,5 +69,8 @@ if __name__ == "__main__":
             csv["Loop Count"].append(iteration)
             csv["Chat History"].append(prompt.get_answers())
             csv["Valid Answer"].append(prompt.get_final_answer())
-        
+
+    assert len(csv["ID"]) == len(csv["Result"]) == len(csv["Loop Count"]) == len(csv["Chat History"]) == len(csv["Valid Answer"])
+    
     df = pd.DataFrame.from_dict(csv)
+    df.to_csv("output.csv", index=False)

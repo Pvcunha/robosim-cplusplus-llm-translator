@@ -55,7 +55,7 @@ class Oracle:
 
         self._save_code(data["code"])
 
-        self._compile_and_run_cpp("./tmp/code.cpp")
+        self._compile_and_run_cpp(f"./tmp/{self.iteration_title}.cpp")
         
         return True
 

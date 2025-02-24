@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from typing import List
+
 
 class PromptInterface(ABC):
     @abstractmethod
@@ -12,6 +14,7 @@ class PromptInterface(ABC):
     @abstractmethod
     def save_final_answer(self, answer) -> None:
         pass
+
 
 class PromptFewShot(PromptInterface):
     def __init__(self, title: str, question: str, code: str) -> None:
@@ -41,5 +44,6 @@ class PromptFewShot(PromptInterface):
     def get_answers(self) -> List:
         return self.answers
 
-    def get_final_answer(self) -> str:
+    def get_final_answer(self) -> str | None:
         return self.final_answer
+
