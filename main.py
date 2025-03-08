@@ -22,7 +22,7 @@ if __name__ == "__main__":
     gpt = OpenAIClient(logger=logger)
     oracle = Oracle(logger=logger)
 
-    question = "Translate the codes from Python to C++."
+    question = "Translate the state machine from RoboSim to C++. using libboost and statechart"
     csv = {
         "ID": [],
         "Result": [],
@@ -32,12 +32,14 @@ if __name__ == "__main__":
     }
 
     for input in Path("src/dataset").iterdir():
-        
+
         iteration = 0
 
         global prompt
         with open(input, "r", encoding="utf-8") as file:
-            prompt = Prompt(title="foo", question=question, code=file.read())
+            exampleFile = open("assets/example.txt", "r", encoding="utf-8")
+            example = exampleFile.read()
+            prompt = Prompt(title="foo", question=question, example = example, code=file.read())
 
         logger.info(f"Processing {input.name}")
 
@@ -71,6 +73,6 @@ if __name__ == "__main__":
             csv["Valid Answer"].append(prompt.get_final_answer())
 
     assert len(csv["ID"]) == len(csv["Result"]) == len(csv["Loop Count"]) == len(csv["Chat History"]) == len(csv["Valid Answer"])
-    
+
     df = pd.DataFrame.from_dict(csv)
     df.to_csv("output.csv", index=False)
