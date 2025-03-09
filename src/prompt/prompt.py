@@ -19,7 +19,7 @@ class PromptInterface(ABC):
 class PromptZeroShot(PromptInterface):
     def __init__(self, title: str, question: str, code: str) -> None:
         self.title = title
-        self.main_question = f"{question}\n{code}"
+        self.main_question = f"{question}\n# Input Robosim code:\n{code}"
         self.answers = []
         self.final_answer = None
 
@@ -51,7 +51,7 @@ class PromptZeroShot(PromptInterface):
 class PromptFewShot(PromptInterface):
     def __init__(self, title: str, question: str, code: str, example: str) -> None:
         self.title = title
-        self.main_question = f"{question}\n{example}\n{code}"
+        self.main_question = f"{question}\n#Input RoboSim code:\n{code}\n # Implementation Example:\n{example}"
         self.answers = []
         self.final_answer = None
 

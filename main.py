@@ -15,15 +15,22 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s",
-        filename="log.log",
-        filemode="w"
+        # filename="log.log",
+        # filemode="w"
     )
 
     gpt = OpenAIClient(logger=logger)
     oracle = Oracle(logger=logger)
 
-    question = "Translate the state machine from RoboSim to C++. using libboost and statechart"
-    csv = {
+    question = '''
+    Translate the following Robosim state machine code into an equivalent C++ implementation using the Boost Statechart Library. Ensure that:
+
+    - The state machine will be placed within a class with the name "StateMachine".
+    - The state machine structure and transitions remain the same.
+    - The states and transitions preserve their logical behavior.
+    - The final state correctly terminates execution.
+    '''
+    csv= {
         "ID": [],
         "Result": [],
         "Loop Count": [],
@@ -31,7 +38,7 @@ if __name__ == "__main__":
         "Valid Answer": []
     }
 
-    for input in Path("src/dataset").iterdir():
+    for input in Path("src/dataset/test").iterdir():
 
         iteration = 0
 
@@ -39,7 +46,7 @@ if __name__ == "__main__":
         with open(input, "r", encoding="utf-8") as file:
             exampleFile = open("assets/example.txt", "r", encoding="utf-8")
             example = exampleFile.read()
-            prompt = Prompt(title="foo", question=question, example = example, code=file.read())
+            prompt = Prompt(title="foo", question=question, example=example, code=file.read())
 
         logger.info(f"Processing {input.name}")
 
