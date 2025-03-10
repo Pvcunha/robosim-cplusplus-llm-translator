@@ -40,8 +40,6 @@ if __name__ == "__main__":
 
     for input in Path("src/dataset/test").iterdir():
 
-        iteration = 0
-
         global prompt
         with open(input, "r", encoding="utf-8") as file:
             exampleFile = open("assets/example.txt", "r", encoding="utf-8")
@@ -55,6 +53,7 @@ if __name__ == "__main__":
             # csv["Request ID"].append(request)
             csv["ID"].append(f"{input.name}_{request}")
             valid = False
+            iteration = 0
 
             while not valid and iteration < MAX_INTERACTIONS:
                 iteration += 1
