@@ -32,7 +32,8 @@ class Oracle:
         executable = "output.exe" if os.name == "nt" else "./output"
 
         # Compile the C++ code using g++
-        compile_command = ["g++", source_file, "-o", executable]
+        libs = ["-lrcsc", "-lboost_system", "-lboost_filesystem"]
+        compile_command = ["g++", source_file, "-o", executable, *libs]
         compile_process = subprocess.run(compile_command, capture_output=True, text=True)
 
         if compile_process.returncode != 0:

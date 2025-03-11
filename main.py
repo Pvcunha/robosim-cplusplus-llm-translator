@@ -4,6 +4,7 @@ from src.clients import OpenAIClient
 from src.prompt import PromptFewShot as Prompt
 from src.utils import *
 from pathlib import Path
+from time import sleep
 
 import pandas as pd
 
@@ -23,12 +24,17 @@ if __name__ == "__main__":
     oracle = Oracle(logger=logger)
 
     question = '''
-    Translate the following Robosim state machine code into an equivalent C++ implementation using the Boost Statechart Library. Ensure that:
+    Translate the following Robosim state machine code into an equivalent C++ implementation using the Boost Statechart Library.
 
-    - The state machine will be placed within a class with the name "StateMachine".
+    Rules:
+    - Use librcsc for robocup simulation 2d environment
+    - The state machine must be within a class with the name "StateMachine".
     - The state machine structure and transitions remain the same.
     - The states and transitions preserve their logical behavior.
     - The final state correctly terminates execution.
+    - Remember to add the conditional bodies in the transitions 
+
+    Rationale about your response, think carefully, this is important.
     '''
     csv= {
         "ID": [],
@@ -54,8 +60,8 @@ if __name__ == "__main__":
             csv["ID"].append(f"{input.name}_{request}")
             valid = False
             iteration = 0
-
             while not valid and iteration < MAX_INTERACTIONS:
+                sleep(3)
                 iteration += 1
                 logger.info(f"Iteration {iteration} request {request}")
 
