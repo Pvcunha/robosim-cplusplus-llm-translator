@@ -24,18 +24,21 @@ if __name__ == "__main__":
     oracle = Oracle(logger=logger)
 
     question = '''
-    Translate the following Robosim state machine code into an equivalent C++ implementation using the Boost Statechart Library.
-
-    Rules:
-    - Use librcsc for robocup simulation 2d environment
-    - The state machine must be within a class with the name "StateMachine".
-    - The state machine structure and transitions remain the same.
-    - The states and transitions preserve their logical behavior.
-    - The final state correctly terminates execution.
-    - Remember to add the conditional bodies in the transitions 
-
-    Rationale about your response, think carefully, this is important.
+    # Question  
+    You will be given a RoboSim state machine. Can you please translate to an equivalent C++ code using the Boost Statechart Library?
+    
+    ## Rules
+        - server::Vector2D is an alias for rcsc::Vector2D data type
+    
+    ## Instructions:
+        - Remember to use librcsc from RoboCup 2D
+        - Keep the state machine structure and transitions
+        - Keep states and transitions logical behavior
+        - Remember to add the conditional bodies in the transitions
+        - Ensure that the machine execution only ends when the terminal state is reached (use the "terminate" method)
+        - Think carefully, this is important.
     '''
+
     csv= {
         "ID": [],
         "Result": [],
@@ -61,12 +64,13 @@ if __name__ == "__main__":
             valid = False
             iteration = 0
             while not valid and iteration < MAX_INTERACTIONS:
-                sleep(3)
                 iteration += 1
                 logger.info(f"Iteration {iteration} request {request}")
 
+                prompt_message = prompt.get_prompt()
+                global answer
+                answer = ""
                 try:
-                    prompt_message = prompt.get_prompt()
                     answer = gpt.interact(prompt_message)
                     oracle.set_iteration_title(f"{input.name}_{request}_{iteration}")
                     valid = oracle.validate_output(answer)

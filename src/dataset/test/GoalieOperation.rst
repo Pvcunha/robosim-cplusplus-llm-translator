@@ -4,7 +4,7 @@ operation doGoalie ( agent: server::PlayerAgent ) {
 	var insideGoalieArea : boolean
 	var bodyInterceptAct : boolean
 	var isTacklePossible : boolean
-	var blockPoint : server::Point
+	var blockPoint : server::Vector2D
 	initial i0
 	final f0
 
@@ -94,7 +94,12 @@ operation doGoalie ( agent: server::PlayerAgent ) {
 	output context { requires server::MovementI requires server::CatchI requires server::TackleI requires server::ClearBallI requires server::BodyInterceptI }
 }
 
-function checkBody(ball : server::Point) : boolean {}
-function isInOurPenaltyArea(ball : server::Point) : boolean { }
+datatype Point {
+	x : real
+	y : real
+}
+
+function checkBody(ball : server::Vector2D) : boolean {}
+function isInOurPenaltyArea(ball : server::Vector2D) : boolean { }
 function checkTackle(prob : real) : boolean { }
-function calculateBlockPoint(ball : server::Point , goalPos : server::Point) : server::Point { }
+function calculateBlockPoint(ball : server::Vector2D , goalPos : server::Vector2D) : server::Vector2D { }

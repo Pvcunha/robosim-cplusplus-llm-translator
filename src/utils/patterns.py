@@ -3,7 +3,7 @@ DEFAULT_JSON_PATTERN = {
   "properties": {
     "code": {
         "type": "string",
-        "description": "C++ source code"
+        "description": "C++ source code. The class name is 'StateMachine'."
     }
   },
   "required": ["code"],
