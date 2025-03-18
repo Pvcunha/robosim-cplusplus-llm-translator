@@ -3,7 +3,7 @@ import logging
 import time
 from openai import OpenAI
 from src import errors
-from src.utils import DEFAULT_JSON_PATTERN
+from src.utils import DEFAULT_JSON_PATTERN, MAX_RETRY_PER_REQUEST, RETRY_DELAY
 
 class OpenAIClient:
     def __init__(self, logger: logging.Logger = None):
@@ -16,10 +16,8 @@ class OpenAIClient:
         self.logger = logger
 
     def interact(self, message: str):
-        max_retries = 5
-        retry_delay = 2
-
-        for attempt in range(max_retries):
+        for attempt in range(MAX_RETRY_PER_REQUEST):
+            self.logger.info(f"Attempt: {attempt}")
             try:
                 response = self.client.chat.completions.create(
                     model="gpt-4.5-preview",
@@ -43,33 +41,6 @@ class OpenAIClient:
                 return args
             except openai.error.RateLimitError as e:
                 self.logger.error("Rate limit exceeded")
-                time.sleep(retry_delay)
+                time.sleep(RETRY_DELAY)
             except Exception as e:
                 raise errors.RequestFailedError(str(e))
-
-    def _get_hello_world_cpp(self):
-        try:
-            response = self.client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "user", "content": "Write a C++ Hello World program"}
-                ],
-                tools=[
-                    {
-                        "type": "function",
-                        "function": {
-                            "name": "generate_code",
-                            "description": "Generate C++ source code in JSON format.",
-                            "parameters": DEFAULT_JSON_PATTERN,
-                            "strict": True,
-                        },
-                    }
-                ],
-                tool_choice="required",
-            )
-
-            args = response.choices[0].message.tool_calls[0].function.arguments
-
-            return args
-        except Exception as e:
-            raise errors.RequestFailedError(str(e))

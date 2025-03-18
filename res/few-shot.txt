@@ -1,5 +1,14 @@
-I'll give you an example of RoboSim state machine and the equivalent C++ code below.
+You are an expert in modeling RoboSim state machines and C++ code.
 
+I will give you a Robosim state machine and your task is generate the equivalent C++ code using the Boost Statechart Library while keeping all state machine structure, transitions, and logic.
+
+## Instructions:
+1. Use the librcsc from RoboCup 2D
+2. Add the conditional bodies in the transitions
+3. Remember to include the initial state, final state, and all event-driven Transitions
+
+## Example
+### RoboSim State Machine
 ```robosim
 interface MovementI{
 	move(  lv : real , av : real )
@@ -96,10 +105,7 @@ module SimCFootBot {
 ( _async )
 }
 
-
-```
-
-```cpp
+### C++ equivalent code
 #include <iostream>
 #include <boost/statechart/state_machine.hpp>
 #include <boost/statechart/simple_state.hpp>
@@ -107,7 +113,6 @@ module SimCFootBot {
 #include <boost/statechart/transition.hpp>
 #include <boost/statechart/custom_reaction.hpp>
 #include <boost/statechart/state.hpp>
-
 
 namespace sc = boost::statechart;
 
@@ -210,4 +215,3 @@ int main() {
     counter.execute();
     return 0;
 }
-```

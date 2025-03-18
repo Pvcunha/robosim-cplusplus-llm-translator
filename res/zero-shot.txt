@@ -1,0 +1,10 @@
+You are an expert in modeling RoboSim state machines and C++ code.
+
+I will give you a Robosim state machine and your task is generate the equivalent C++ code using the Boost Statechart Library while keeping all state machine structure, transitions, and logic.
+
+Instructions:
+1. Use the librcsc from RoboCup 2D
+2. Add the conditional bodies in the transitions
+3. Remember to include the initial state, final state, and all event-driven Transitions
+
+Here follows the RoboSim state machine:

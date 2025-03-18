@@ -25,7 +25,6 @@ class Oracle:
                 raise errors.InvalidOutputFormatError("Invalid output format: {}".format(ai_json))
         except Exception as e:
             raise errors.InvalidOutputFormatError("Invalid output format: {}".format(ai_json))
-
         return data
     
     def _compile_and_run_cpp(self, source_file):
@@ -38,7 +37,7 @@ class Oracle:
 
         if compile_process.returncode != 0:
             self.logger.error(f"Compilation failed. {compile_process.stderr}")
-            raise errors.CompilationError(compile_process.stderr)
+            raise errors.CompileError(compile_process.stderr)
 
         self.logger.info("Compilation successful. Running the program...\n")
 
