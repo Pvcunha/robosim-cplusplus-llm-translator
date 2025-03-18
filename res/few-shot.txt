@@ -1,3 +1,5 @@
+Let RoboSim be a UML-like notation designed specifically for simulation of autonomous and mobile robots, and including timed primitives.
+
 You are an expert in modeling RoboSim state machines and C++ code.
 
 I will give you a Robosim state machine and your task is generate the equivalent C++ code using the Boost Statechart Library while keeping all state machine structure, transitions, and logic.
@@ -88,8 +90,6 @@ stm SimSMovement{
 		action $ stop ( )
 	}
 }
-
-
 
 module SimCFootBot {
 
