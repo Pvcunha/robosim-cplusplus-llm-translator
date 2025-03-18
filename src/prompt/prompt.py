@@ -19,6 +19,7 @@ class Prompt(PromptInterface):
         self.main_question = f"{question}\n{code}"
         self.answers = []
         self.final_answer = None
+        self.messages = [{"role": "user", "content": self.main_question}]
 
     def save_intermediate_answer(self, answer, error) -> None:
         self.answers.append({"answer": answer, "error": error})
@@ -27,8 +28,14 @@ class Prompt(PromptInterface):
         self.save_intermediate_answer(answer, None)
         self.final_answer = answer
 
+    def add_output(self,output):
+        self.messages.append({"role": "assistant", "content": output})
+
+    def add_output_error(self,outputError):
+        self.messages.append({"role": "user", "content": outputError})
+
     def get_prompt(self) -> str:
-        return self.main_question
+        return self.messages
         # question = f"question: {self.main_question}"
         # iterations_logs = ""
         # for iteration in self.answers:
