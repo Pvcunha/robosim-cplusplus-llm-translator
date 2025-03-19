@@ -1,58 +1,53 @@
 package operations
 
-operation doGoalie ( agent: server::PlayerAgent ) {
+operation doGoalie ( agent: server::PlayerAgent ) { 
 	var insideGoalieArea : boolean
 	var bodyInterceptAct : boolean
 	var isTacklePossible : boolean
-	var blockPoint : server::Vector2D
+	var catchable: boolean
+	var blockPoint : server::Point
 	initial i0
 	final f0
 
 	state SdoCatch {
-		entry insideGoalieArea = isInOurPenaltyArea ( agent . worldModel . ball )
+		entry insideGoalieArea = isInOurPenaltyArea ( agent ); catchable = isCatchable(agent)
 	}
-
+	
 	state SClearBall {
-
+		
 	}
 
 	junction j0
 	junction j1
-
+	
 	junction j2
 	state SdoTackle {
-		entry isTacklePossible = checkTackle ( agent . worldModel . tackleProbability )
+		entry isTacklePossible = checkTackle ( agent . worldModel . self . tackleProbability )
 	}
 	junction j3
 	state doMove {
-		entry blockPoint = calculateBlockPoint ( agent . worldModel . ball , agent . worldModel . goalPosition )
 	}
-
+	
 	transition t0 {
 		from i0
 		to SdoCatch
 	}
-
+	
 	transition t1 {
 		from SdoCatch
 		to j0
 	}
-
+	
 	transition t2 {
 		from j0
 		to j1
-	condition agent . worldModel . catchable /\ insideGoalieArea
-		action $ doCatch ( )
+	condition catchable /\ insideGoalieArea
+		action $ doShoot ( )
 	}
 	transition t3 {
 		from j0
 		to SClearBall
-		condition not ( agent . worldModel . catchable /\ insideGoalieArea )
-	}
-	transition t4 {
-		from j1
-		to f0
-		action exec
+		condition not ( catchable /\ insideGoalieArea )
 	}
 	transition t5 {
 		from SClearBall
@@ -61,13 +56,13 @@ operation doGoalie ( agent: server::PlayerAgent ) {
 	transition t6 {
 		from j2
 		to j1
-		condition agent . worldModel . isKickable
-		action $ doClearBall ( )
+		condition agent . worldModel . self . isKickable
+		action $ doTackle ( )
 	}
 	transition t7 {
 		from j2
 		to SdoTackle
-		condition not agent . worldModel . isKickable
+		condition not agent . worldModel . self . isKickable
 	}
 	transition t8 {
 		from SdoTackle
@@ -77,7 +72,7 @@ operation doGoalie ( agent: server::PlayerAgent ) {
 		from j3
 		to j1
 		condition isTacklePossible
-		action $ doTackle ( )
+		action $ doCatch ( )
 	}
 	transition t10 {
 		from j3
@@ -87,19 +82,20 @@ operation doGoalie ( agent: server::PlayerAgent ) {
 	transition t11 {
 		from doMove
 		to j1
-		action $ doMove ( blockPoint )
+		action 
+	$  doMove ( )
 	}
-
+	
+	transition t4 {
+		from j1
+		to f0
+	}
+	
 	input context {  }
-	output context { requires server::MovementI requires server::CatchI requires server::TackleI requires server::ClearBallI requires server::BodyInterceptI }
+	output context { requires server::ShootI requires server::CatchI requires server::TackleI requires server::ClearBallI requires server::MovementI }
 }
 
-datatype Point {
-	x : real
-	y : real
-}
-
-function checkBody(ball : server::Vector2D) : boolean {}
-function isInOurPenaltyArea(ball : server::Vector2D) : boolean { }
+function isCatchable(agent: server::PlayerAgent) : boolean {}
+function checkBody(agent: server::PlayerAgent) : boolean {}
+function isInOurPenaltyArea(agent: server::PlayerAgent) : boolean { }
 function checkTackle(prob : real) : boolean { }
-function calculateBlockPoint(ball : server::Vector2D , goalPos : server::Vector2D) : server::Vector2D { }

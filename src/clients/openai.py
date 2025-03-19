@@ -8,7 +8,7 @@ class OpenAIClient:
     def __init__(self, logger: logging.Logger = None):
         self.client = openai.OpenAI()
         self.default_output_format = '{"code": "#include <iostream>\n\nint main() {\n    std::cout << "Hello, World!" << std::endl;\n    return 0;\n}"}'
-        self.model = "gpt-4o"
+        self.model = "gpt-4.5-preview"
         self.messages = (
             []
         )  # to append messages and generate an message history between the user and the AI
