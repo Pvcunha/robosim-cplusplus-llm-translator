@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from src.oracle import Oracle
 from src.clients import OpenAIClient
-from src.prompt import PromptFewShot as Prompt
+from src.prompt import PromptZeroShot as Prompt
 from src.utils import *
 from pathlib import Path
 from time import sleep
@@ -29,14 +29,67 @@ if __name__ == "__main__":
     
     ## Rules
         - server::Vector2D is an alias for rcsc::Vector2D data type
-    
+        - use just this imports:
+            #include "rcsc/geom/vector_2d.h"
+            #include <boost/statechart/custom_reaction.hpp>
+            #include <boost/statechart/termination.hpp>
+
+            #include <boost/statechart/event.hpp>
+            #include <boost/statechart/result.hpp>
+            #include <boost/statechart/simple_state.hpp>
+            #include <boost/statechart/state.hpp>
+            #include <boost/statechart/state_machine.hpp>
+            #include <boost/statechart/transition.hpp>
+            #include <rcsc/player/soccer_action.h>
+            #include <rcsc/player/world_model.h>
+            #include <rcsc/player/player_agent.h>
+
+
     ## Instructions:
         - Remember to use librcsc from RoboCup 2D
+        - librcsc imports follows the pattern: #include <rcsc/...>
         - Keep the state machine structure and transitions
+        - use boost statechart library
         - Keep states and transitions logical behavior
         - Remember to add the conditional bodies in the transitions
         - Ensure that the machine execution only ends when the terminal state is reached (use the "terminate" method)
         - Think carefully, this is important.
+    '''
+
+    question2 = '''
+        ## Context
+            Let RoboSim be a UML-like notation designed specifically for simulation of autonomous and mobile robots, and including timed primitives.
+            Let RoboCup 2D be a category of autonomous multi-agent robots of a simulated soccer game.
+
+            ## Instructions
+            I will give you a Robosim state machine and your task is generate the equivalent C++ code using the Boost Statechart Library while keeping all state machine structure, transitions, and logic.
+
+            DO NOT apply a direct translation. 
+
+            Think carefully, give me a C++ code! Reason a little before answering, take your time, this is important!!!
+            
+            ## Rules
+            - MUST CHANGE server::Vector2D to rcsc::Vector2D
+            - MUST CHANGE server::PlayerAgent to rcsc::PlayerAgent 
+            - use just this imports:
+                #include "rcsc/geom/vector_2d.h"
+                #include <boost/statechart/custom_reaction.hpp>
+                #include <boost/statechart/termination.hpp>
+
+                #include <boost/statechart/event.hpp>
+                #include <boost/statechart/result.hpp>
+                #include <boost/statechart/simple_state.hpp>
+                #include <boost/statechart/state.hpp>
+                #include <boost/statechart/state_machine.hpp>
+                #include <boost/statechart/transition.hpp>
+                #include <rcsc/player/soccer_action.h>
+                #include <rcsc/player/world_model.h>
+                #include <rcsc/player/player_agent.h>
+
+            {}
+
+            ## Requested State Machine
+            Here follows the RoboSim state machine about the goalie behavior, give me the equivalent C++ code, using Boost.Statechart C++ library and librcsc C++ library from RoboCup 2D.
     '''
 
     csv= {
@@ -51,9 +104,11 @@ if __name__ == "__main__":
 
         global prompt
         with open(input, "r", encoding="utf-8") as file:
-            exampleFile = open("assets/example.txt", "r", encoding="utf-8")
+            exampleFile = open("assets/example2.txt", "r", encoding="utf-8")
+            # import pdb; pdb.set_trace()
             example = exampleFile.read()
-            prompt = Prompt(title="foo", question=question, example=example, code=file.read())
+            question = question2.format(example)
+            prompt = Prompt(title="foo", question=question, code=file.read())
 
         logger.info(f"Processing {input.name}")
 
