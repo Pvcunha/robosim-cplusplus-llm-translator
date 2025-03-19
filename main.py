@@ -33,10 +33,10 @@ if __name__ == "__main__":
         "Valid Answer": []
     }
 
-    with open('res/zero-shot.txt') as file: 
+    with open('res/few-shot.txt') as file: 
         question = file.read()
     
-    for input in Path("src/dataset").glob("*.rst"):
+    for input in Path("src/dataset/robocin").glob("*.rst"):
         with open(input, "r", encoding="utf-8") as file:
             prompt = Prompt(question=question, code=file.read())
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
                 global answer
                 answer = None
                 try:
-                    answer = gpt.interact(prompt.get_prompt())
+                    answer = gpt.interact(prompt.get_messages())
                     oracle.set_iteration_title(f"{input.name}_{request}_{iteration}")
                     valid = oracle.validate_output(answer)
                     prompt.add_output(answer)
@@ -69,12 +69,10 @@ if __name__ == "__main__":
 
             csv["Result"].append(valid)
             csv["Loop Count"].append(iteration)
-            csv["Chat History"].append(prompt.get_answers())
+            csv["Chat History"].append(prompt.get_messages())
             csv["Valid Answer"].append(prompt.get_final_answer())
-           
-        break
 
     assert len(csv["ID"]) == len(csv["Result"]) == len(csv["Loop Count"]) == len(csv["Chat History"]) == len(csv["Valid Answer"])
 
     df = pd.DataFrame.from_dict(csv)
-    df.to_csv("output.csv", index=False)
+    df.to_csv("few-shot.csv", index=False)
