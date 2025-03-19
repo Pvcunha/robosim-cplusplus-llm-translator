@@ -63,7 +63,7 @@ if __name__ == "__main__":
                         logger.debug(f"Final answer: {answer}")
                         prompt.save_final_answer(answer)
 
-                except errors.InvalidOutputFormatError or errors.CompileError as e:
+                except (errors.InvalidOutputFormatError,errors.CompileError) as e:
                     prompt.add_output_error(str(e))
                     logger.debug(str(e))
 
