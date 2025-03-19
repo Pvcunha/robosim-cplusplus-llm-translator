@@ -41,34 +41,30 @@ if __name__ == "__main__":
         logger.info(f"Processing {input.name}")
         for request in range(MAX_REQUEST_PER_FILE):
             csv["ID"].append(f"{input.name}_{request}")
-            valid = False
+            answer = None
 
-            iteration = 0
-            while not valid and iteration < MAX_RETRY_PER_REQUEST:
+            for retry in range(MAX_RETRY_PER_REQUEST):
                 sleep(3)
-                iteration += 1
-                logger.info(f"Request {request} for retry {iteration}")
+                logger.info(f"Request {request} for retry {retry}")
 
-                global answer
-                answer = None
                 try:
-                    answer = gpt.interact(prompt.get_messages())
-                    oracle.set_iteration_title(f"{input.name}_{request}_{iteration}")
+                    print(prompt.get_prompt())
+                    answer = gpt.interact(prompt.get_prompt())
+                    oracle.set_iteration_title(f"{input.name}_{request}_{retry}")
                     valid = oracle.validate_output(answer)
-                    prompt.add_output(answer)
 
-                    if valid:
-                        logger.debug(f"Final answer: {answer}")
-                        prompt.save_final_answer(answer)
+                    if valid: 
+                        logger.info(f"Valid response found: {answer}")
+                        break
 
                 except (errors.InvalidOutputFormatError,errors.CompileError) as e:
-                    prompt.add_output_error(str(e))
-                    logger.debug(str(e))
+                    prompt.set_history(answer, str(e))
+                    logger.info(f"Invalid response error: {str(e)}")
 
             csv["Result"].append(valid)
-            csv["Loop Count"].append(iteration)
+            csv["Loop Count"].append(retry)
             csv["Chat History"].append(prompt.get_messages())
-            csv["Valid Answer"].append(prompt.get_final_answer())
+            csv["Valid Answer"].append(answer)
 
     assert len(csv["ID"]) == len(csv["Result"]) == len(csv["Loop Count"]) == len(csv["Chat History"]) == len(csv["Valid Answer"])
 

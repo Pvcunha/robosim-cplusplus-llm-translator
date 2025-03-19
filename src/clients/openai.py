@@ -18,7 +18,7 @@ class OpenAIClient:
         try:
             response = self.client.chat.completions.create(
                 model="gpt-4o",
-                messages=message,
+                messages=[{"role": "user", "content": message}],
                 
                 tools=[
                     {

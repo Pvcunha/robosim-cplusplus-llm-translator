@@ -3,20 +3,17 @@ from typing import List
 class Prompt():
     def __init__(self, question: str, code: str) -> None:
         self.main_question = f"{question}\n{code}"
-        self.final_answer = None
-        self.messages = [{"role": "user", "content": self.main_question}]
+        self.history = []
 
-    def save_final_answer(self, answer) -> None:
-        self.final_answer = answer
+    def get_prompt(self):
+        question = f"The main question is: {self.main_question}"
+        iterations_logs = ""
+        for iteration in self.history:
+            answer, error = iteration["answer"], iteration["error"]
+            follow_up = f"But this answer: {answer} got this error {error}"
+            iterations_logs = f"{iterations_logs}\n{follow_up}"
 
-    def add_output(self,output):
-        self.messages.append({"role": "assistant", "content": output})
+        return f"{question}\n{iterations_logs}"
 
-    def add_output_error(self,outputError):
-        self.messages.append({"role": "user", "content": outputError})
-
-    def get_messages(self) -> str:
-        return self.messages
-
-    def get_final_answer(self) -> str | None:
-        return self.final_answer
+    def set_history(self, answer, error): 
+        self.history.append({"answer": answer, "error": error})
