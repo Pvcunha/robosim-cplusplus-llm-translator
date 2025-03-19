@@ -8,6 +8,7 @@ I will give you a Robosim state machine and your task is generate the equivalent
 1. Use the librcsc from RoboCup 2D
 2. Add the conditional bodies in the transitions
 3. Remember to include the initial state, final state, and all event-driven transitions
+4. DO NOT apply a direct translation. Think carefully, give me a C++ code! Reason a little before answering, take your time, this is important!
 
 ## Rules for translation of a RoboSim metamodel to C++ code
 ### Function 2. Translation of a State Machine Body.
