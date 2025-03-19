@@ -46,7 +46,7 @@ if __name__ == "__main__":
             valid = False
 
             iteration = 0
-            while not valid and iteration < MAX_REQUEST_PER_FILE:
+            while not valid and iteration < MAX_RETRY_PER_REQUEST:
                 sleep(3)
                 iteration += 1
                 logger.info(f"Iteration {iteration} request {request}")
