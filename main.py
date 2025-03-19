@@ -49,7 +49,7 @@ if __name__ == "__main__":
             while not valid and iteration < MAX_RETRY_PER_REQUEST:
                 sleep(3)
                 iteration += 1
-                logger.info(f"Iteration {iteration} request {request}")
+                logger.info(f"Request {request} for retry {iteration}")
 
                 global answer
                 answer = None
