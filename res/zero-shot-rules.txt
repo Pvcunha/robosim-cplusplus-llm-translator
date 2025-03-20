@@ -1,0 +1,90 @@
+Let RoboSim be a UML-like notation designed specifically for simulation of autonomous and mobile robots, and including timed primitives.
+
+You are an expert in modeling RoboSim state machines and C++ code.
+
+I will give you a Robosim state machine and your task is generate the equivalent C++ code using the Boost Statechart Library while keeping all state machine structure, transitions, and logic.
+
+## Instructions
+1. Use the librcsc from RoboCup 2D
+2. Add the conditional bodies in the transitions
+3. Remember to include the initial state, final state, and all event-driven transitions
+4. DO NOT apply a direct translation. Think carefully, give me a C++ code! Reason a little before answering, take your time, this is important!
+
+## Rules for translation of a RoboSim metamodel to C++ code
+### Function 2. Translation of a State Machine Body.
+translate_state_machine_body(smb : StateMachineBody) : C + + =
+    class smb.name RoboSim : rcsc :: SoccerBehavior{
+    variable declarations(smb)
+    struct smb.name : sc :: state machine < smb.name, getInitialJunction(smb) > {};
+    translate nodes(smb)
+};
+
+### Function 3. Translation of Nodes.
+translate_nodes(smb : StateMachineBody) : C + + =
+    for (n : smb.nodes) {
+    if (n ∈ Initial ∨ n ∈ Junction ∨ n ∈ Final)
+    then translate junction(smb, n)
+    if (n ∈ State)
+    then translate simple_state(smb, n)
+}
+
+### Function 4. Translation of a Simple State.
+translate_simple_state(smb : StateMachineBody, st : State) : C + + =
+    struct st.name : sc :: state < st.name, smb.name > {
+        using reactions = sc :: custom reaction < Transition >;
+        if (st.actions̸ = null) {
+            for(action : st.actions)
+                translate_action(st, action) 
+        }
+
+        sc :: result react(const Transition &){
+            translate_transitions(smb, st)
+        }
+    };
+
+### Function 5. Translation of an Action
+translate_action(st : State, ac : Action) : C + + =
+    if (ac is EntryAction){
+    translate entry_action(st, ac.action)
+    }
+    if (ac is ExitAction){
+    translate exit_action(st, ac.action)
+    }
+
+### Function 6. Translation of an Entry action
+translate entry_action(st : State, stmt : Statement) : C + + =
+    st.name (my context ctx ) : my_base(ctx ){
+    translate_statement(stmt)}
+    
+
+### Function 7. Translation of an Exit action
+translate_exit_action(st : State, stmt : Statement) : C + + =
+~st.name () {
+    translate_statement(stmt)}
+
+### Function 8. Translation of transitions.
+translate transitions(stm : StateMachineBody, st : State) : C + + =
+sc :: result react(const Transition &){
+let stateTransitions = transitions from state(stm, st)
+    firstTransition = stateTransitions.head()
+    c = (firstTransition.condition̸ = null ? translate expression(firstTransition.condition) : true)
+    a = (firstTransition.action̸ = null ? translate statement(firstTransition.action) : )
+
+if (c) {
+a
+return transit < firstTransition.target.name > ();
+}
+
+for (t : stateTransitions.tail()) {
+    c = (t.condition = null ? translate expression(t.condition) : true)
+    a = (t.action = null ? translate statement(t.action) : )
+    
+
+    else if (c) {
+    a
+    return transit < t.target.name > ();
+    }
+}
+};
+
+Here follows the RoboSim state machine:

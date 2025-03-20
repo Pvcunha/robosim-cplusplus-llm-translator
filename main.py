@@ -1,10 +1,12 @@
 from dotenv import load_dotenv
 from src.oracle import Oracle
 from src.clients import OpenAIClient
-from src.prompt import PromptFewShot as Prompt
+from src.prompt import Prompt as Prompt
 from src.utils import *
 from pathlib import Path
 from time import sleep
+
+from src import errors
 
 import pandas as pd
 
@@ -16,28 +18,10 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s",
-        # filename="log.log",
-        # filemode="w"
     )
 
     gpt = OpenAIClient(logger=logger)
     oracle = Oracle(logger=logger)
-
-    question = '''
-    # Question  
-    You will be given a RoboSim state machine. Can you please translate to an equivalent C++ code using the Boost Statechart Library?
-    
-    ## Rules
-        - server::Vector2D is an alias for rcsc::Vector2D data type
-    
-    ## Instructions:
-        - Remember to use librcsc from RoboCup 2D
-        - Keep the state machine structure and transitions
-        - Keep states and transitions logical behavior
-        - Remember to add the conditional bodies in the transitions
-        - Ensure that the machine execution only ends when the terminal state is reached (use the "terminate" method)
-        - Think carefully, this is important.
-    '''
 
     csv= {
         "ID": [],
@@ -47,48 +31,42 @@ if __name__ == "__main__":
         "Valid Answer": []
     }
 
-    for input in Path("src/dataset/test").iterdir():
-
-        global prompt
+    with open('res/few-shot.txt') as file: 
+        question = file.read()
+    
+    for input in Path("src/dataset/robocin").glob("*.rst"):
         with open(input, "r", encoding="utf-8") as file:
-            exampleFile = open("assets/example.txt", "r", encoding="utf-8")
-            example = exampleFile.read()
-            prompt = Prompt(title="foo", question=question, example=example, code=file.read())
+            prompt = Prompt(question=question, code=file.read())
 
         logger.info(f"Processing {input.name}")
-
-        for request in range(MAX_REQUEST):
-            # csv["Code ID"].append(input.name)
-            # csv["Request ID"].append(request)
+        for request in range(MAX_REQUEST_PER_FILE):
             csv["ID"].append(f"{input.name}_{request}")
-            valid = False
-            iteration = 0
-            while not valid and iteration < MAX_INTERACTIONS:
-                iteration += 1
-                logger.info(f"Iteration {iteration} request {request}")
+            answer = None
 
-                prompt_message = prompt.get_prompt()
-                global answer
-                answer = ""
+            for retry in range(MAX_RETRY_PER_REQUEST):
+                sleep(3)
+                logger.info(f"Request {request} for retry {retry}")
+
                 try:
-                    answer = gpt.interact(prompt_message)
-                    oracle.set_iteration_title(f"{input.name}_{request}_{iteration}")
+                    print(prompt.get_prompt())
+                    answer = gpt.interact(prompt.get_prompt())
+                    oracle.set_iteration_title(f"{input.name}_{request}_{retry}")
                     valid = oracle.validate_output(answer)
 
-                    if valid:
-                        logger.debug(f"Final answer: {answer}")
-                        prompt.save_final_answer(answer)
+                    if valid: 
+                        logger.info(f"Valid response found: {answer}")
+                        break
 
-                except Exception as e:
-                    logger.debug(str(e))
-                    prompt.save_intermediate_answer(answer, str(e))
+                except (errors.InvalidOutputFormatError,errors.CompileError) as e:
+                    prompt.set_history(answer, str(e))
+                    logger.info(f"Invalid response error: {str(e)}")
 
             csv["Result"].append(valid)
-            csv["Loop Count"].append(iteration)
-            csv["Chat History"].append(prompt.get_answers())
-            csv["Valid Answer"].append(prompt.get_final_answer())
+            csv["Loop Count"].append(retry)
+            csv["Chat History"].append(prompt.get_messages())
+            csv["Valid Answer"].append(answer)
 
     assert len(csv["ID"]) == len(csv["Result"]) == len(csv["Loop Count"]) == len(csv["Chat History"]) == len(csv["Valid Answer"])
 
     df = pd.DataFrame.from_dict(csv)
-    df.to_csv("output.csv", index=False)
+    df.to_csv("few-shot.csv", index=False)

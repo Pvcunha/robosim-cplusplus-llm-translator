@@ -1,0 +1,9 @@
+Let RoboSim be a UML-like notation designed specifically for simulation of autonomous and mobile robots, and including timed primitives.
+
+I will give you a Robosim state machine and your task is generate the equivalent C++ code using the Boost Statechart Library while keeping all state machine structure, transitions, and logic.
+
+DO NOT apply a direct translation. Think carefully, give me a C++ code! Reason a little before answering, take your time, this is important!!!
+
+Remember to use the librcsc from RoboCup 2D, add the conditional bodies in the transitions.
+
+Here follows the RoboSim state machine, give me the equivalent C++ code:
