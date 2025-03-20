@@ -12,7 +12,10 @@ Think carefully, give me a C++ code! Reason a little before answering, take your
 ## Rules
 - MUST CHANGE server::Vector2D to rcsc::Vector2D
 - MUST CHANGE server::PlayerAgent to rcsc::PlayerAgent 
-- use just this imports:
+- MUST use rcsc::PlayerAgent as pointer
+- MUST add the conditional bodies in the transitions
+- MUST include function parameters in functions
+- MUST use just this imports:
     #include "rcsc/geom/vector_2d.h"
     #include <boost/statechart/custom_reaction.hpp>
     #include <boost/statechart/termination.hpp>
@@ -232,4 +235,4 @@ int main() {
 }
 
 ## Requested State Machine
-Here follows the RoboSim state machine about the goalie behavior, give me the equivalent C++ code, using Boost.Statechart C++ library and librcsc C++ library from RoboCup 2D.
+Here follows the RoboSim state machine, give me the equivalent C++ code, using Boost.Statechart C++ library and librcsc C++ library from RoboCup 2D.
