@@ -58,38 +58,43 @@ if __name__ == "__main__":
 
     question2 = '''
         ## Context
-            Let RoboSim be a UML-like notation designed specifically for simulation of autonomous and mobile robots, and including timed primitives.
-            Let RoboCup 2D be a category of autonomous multi-agent robots of a simulated soccer game.
+        Let RoboSim be a UML-like notation designed specifically for simulation of autonomous and mobile robots, and including timed primitives.
+        Let RoboCup 2D be a category of autonomous multi-agent robots of a simulated soccer game.
 
-            ## Instructions
-            I will give you a Robosim state machine and your task is generate the equivalent C++ code using the Boost Statechart Library while keeping all state machine structure, transitions, and logic.
+        ## Instructions
+        I will give you a Robosim state machine and your task is generate the equivalent C++ code using the Boost Statechart Library while keeping all state machine structure, transitions, and logic.
 
-            DO NOT apply a direct translation. 
+        DO NOT apply a direct translation. 
 
-            Think carefully, give me a C++ code! Reason a little before answering, take your time, this is important!!!
-            
-            ## Rules
-            - MUST CHANGE server::Vector2D to rcsc::Vector2D
-            - MUST CHANGE server::PlayerAgent to rcsc::PlayerAgent 
-            - use just this imports:
-                #include "rcsc/geom/vector_2d.h"
-                #include <boost/statechart/custom_reaction.hpp>
-                #include <boost/statechart/termination.hpp>
+        Think carefully, give me a C++ code! Reason a little before answering, take your time, this is important!!!
+        
+        ## Rules
+        - MUST CHANGE server::Vector2D to rcsc::Vector2D
+        - MUST CHANGE server::PlayerAgent to rcsc::PlayerAgent 
+        - MUST use rcsc::PlayerAgent as pointer
+        - MUST add the conditional bodies in the transitions
+        - MUST include function parameters in functions
+        - MUST use just this imports:
+            #include "rcsc/geom/vector_2d.h"
+            #include <boost/statechart/custom_reaction.hpp>
+            #include <boost/statechart/termination.hpp>
 
-                #include <boost/statechart/event.hpp>
-                #include <boost/statechart/result.hpp>
-                #include <boost/statechart/simple_state.hpp>
-                #include <boost/statechart/state.hpp>
-                #include <boost/statechart/state_machine.hpp>
-                #include <boost/statechart/transition.hpp>
-                #include <rcsc/player/soccer_action.h>
-                #include <rcsc/player/world_model.h>
-                #include <rcsc/player/player_agent.h>
+            #include <boost/statechart/event.hpp>
+            #include <boost/statechart/result.hpp>
+            #include <boost/statechart/simple_state.hpp>
+            #include <boost/statechart/state.hpp>
+            #include <boost/statechart/state_machine.hpp>
+            #include <boost/statechart/transition.hpp>
+            #include <rcsc/player/soccer_action.h>
+            #include <rcsc/player/world_model.h>
+            #include <rcsc/player/player_agent.h>
 
-            {}
+        {}
 
-            ## Requested State Machine
-            Here follows the RoboSim state machine about the goalie behavior, give me the equivalent C++ code, using Boost.Statechart C++ library and librcsc C++ library from RoboCup 2D.
+        {}
+
+        ## Requested State Machine
+        Here follows the RoboSim state machine about the goalie and kicker behavior, give me the equivalent C++ code, using Boost.Statechart C++ library and librcsc C++ library from RoboCup 2D.
     '''
 
     csv= {
